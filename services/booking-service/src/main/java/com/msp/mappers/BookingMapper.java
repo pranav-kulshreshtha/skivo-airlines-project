@@ -66,7 +66,9 @@ public class BookingMapper {
                 //flight details
                 .flightId(booking.getFlightId())
                 .flightNumber(flightResponse == null ? null : flightResponse.getFlightNumber())
-                .flightName(flightResponse == null ? null :
+                .flightName((flightResponse == null
+                        || flightResponse.getDepartureAirport() == null
+                        || flightResponse.getArrivalAirport() == null)  ? null :
                         flightResponse.getDepartureAirport().getName() + " → " +
                                 flightResponse.getArrivalAirport().getName())
 
@@ -79,9 +81,11 @@ public class BookingMapper {
                         flightInstanceResponse.getFormattedDuration())
 
                 //location details
-                .departureAirport(flightResponse == null ? null :
+                .departureAirport((flightResponse == null
+                        || flightResponse.getDepartureAirport() == null) ? null :
                         flightResponse.getDepartureAirport().getName())
-                .arrivalAirport(flightResponse == null ? null :
+                .arrivalAirport((flightResponse == null
+                        || flightResponse.getArrivalAirport() == null) ? null :
                         flightResponse.getArrivalAirport().getName())
                 .status(booking.getStatus())
                 .bookingDate(booking.getBookingDate())
