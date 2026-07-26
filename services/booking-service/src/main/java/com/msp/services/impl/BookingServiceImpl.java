@@ -1,5 +1,8 @@
 package com.msp.services.impl;
 
+import com.msp.client.AncillaryClient;
+import com.msp.client.FlightClient;
+import com.msp.client.SeatClient;
 import com.msp.enums.BookingStatus;
 import com.msp.mappers.BookingMapper;
 import com.msp.models.Booking;
@@ -12,6 +15,7 @@ import com.msp.repositories.BookingRepository;
 import com.msp.services.BookingService;
 import com.msp.services.PassengerService;
 import com.msp.services.TicketService;
+import com.msp.services.integration.FareIntegrationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -25,6 +29,10 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final PassengerService passengerService;
     private final TicketService ticketService;
+    private final FlightClient flightClient;
+    private final SeatClient seatClient;
+    private final AncillaryClient ancillaryClient;
+    private final FareIntegrationService fareIntegrationService;
 
     @Override
     public BookingResponse createBooking(BookingRequest request, Long userId) {
@@ -39,7 +47,8 @@ public class BookingServiceImpl implements BookingService {
             passengers.add(passenger);
         }
 
-        //todo step 3 : check if flight exists
+        //step 3 : check if flight exists
+        FlightResponse flightResponse = flightClient.getFlightsById(request.getFlightId());
 
         //step 4 : create booking with pending status
         Booking booking = BookingMapper.toEntity(
@@ -48,8 +57,10 @@ public class BookingServiceImpl implements BookingService {
                 passengers,
                 bookingReference
         );
-        //todo : set airlineId from flight response
-        booking.setAirlineId(1L);
+
+        //set airlineId from flight response
+        booking.setAirlineId(flightResponse.getAirline()!=null ?
+                flightResponse.getAirline().getId() : null);
 
         //step 5 : set seat instance ids
         List<Long> seatInstanceIds = request.getPassengers()
@@ -68,7 +79,16 @@ public class BookingServiceImpl implements BookingService {
         //step 6 : generate tickets for each passenger
         ticketService.generateTicketsForBooking(booking);
 
-        //todo step 7 : calculate price
+        //step 7 : calculate price
+        //fareTotal + seat price + ancillary price + meal price
+        Double fareTotal = fareIntegrationService.calculateFareTotal(
+                request.getFareId());
+        Double seatPrice = seatClient.calculatedSeatPrice(seatInstanceIds);
+        Double ancillaryPrice = ancillaryClient.calculateAncillaryPrice(
+                booking.getAncillaryIds());
+        Double mealPrice = ancillaryClient.calculateMealPrice(
+                booking.getMealIds());
+        Double totalPrice = fareTotal + seatPrice + ancillaryPrice + mealPrice;
 
         //todo step 8 : initiate payment using payment service
 
