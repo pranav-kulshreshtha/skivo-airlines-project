@@ -22,7 +22,7 @@ public class AncillaryServiceImpl implements AncillaryService {
     private final InsuranceCoverageRepository insuranceCoverageRepository;
 
     @Override
-    public AncillaryResponse createAncillary(Long airlineId, AncillaryRequest request) {
+    public AncillaryResponse createAncillary(Long userId, AncillaryRequest request) {
         Ancillary ancillary = Ancillary.builder()
                 .type(request.getType())
                 .subType(request.getSubType())
@@ -54,8 +54,8 @@ public class AncillaryServiceImpl implements AncillaryService {
     }
 
     @Override
-    public List<AncillaryResponse> getByAirlineId(Long airlineId) {
-        return  ancillaryRepository.findByAirlineId(airlineId).stream()
+    public List<AncillaryResponse> getByAirlineId(Long userId) {
+        return  ancillaryRepository.findByAirlineId(userId).stream()
                 .map(anc -> {
                     //fetch insurance coverages by ancillary
                     List<InsuranceCoverage> coverages = insuranceCoverageRepository
