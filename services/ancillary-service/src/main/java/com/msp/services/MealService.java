@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface MealService {
 
-    MealResponse createMeal(Long airlineId, MealRequest request) throws Exception;
+    MealResponse createMeal(Long userId, MealRequest request) throws Exception;
 
     MealResponse getMealById(Long id) throws Exception;
 
-    List<MealResponse> getMealByAirlineId(Long airlineId);
+    List<MealResponse> getMealByAirlineId(Long userId);
 
-    MealResponse updateMeal(Long airlineId, Long id, MealRequest request)
+    MealResponse updateMeal(Long userId, Long id, MealRequest request)
             throws Exception;
 
     MealResponse updateAvailability(Long id, boolean availability) throws Exception;

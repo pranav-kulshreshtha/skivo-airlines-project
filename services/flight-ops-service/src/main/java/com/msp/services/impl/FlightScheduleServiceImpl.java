@@ -1,5 +1,6 @@
 package com.msp.services.impl;
 
+import com.msp.client.AirlineClient;
 import com.msp.client.LocationClient;
 import com.msp.enums.FlightStatus;
 import com.msp.mappers.FlightScheduleMapper;
@@ -7,6 +8,7 @@ import com.msp.models.Flight;
 import com.msp.models.FlightSchedule;
 import com.msp.payloads.requests.FlightInstanceRequest;
 import com.msp.payloads.requests.FlightScheduleRequest;
+import com.msp.payloads.responses.AirlineResponse;
 import com.msp.payloads.responses.AirportResponse;
 import com.msp.payloads.responses.FlightScheduleResponse;
 import com.msp.repositories.FlightRepository;
@@ -28,10 +30,12 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
     private final FlightScheduleRepository flightScheduleRepository;
     private final FlightInstanceService flightInstanceService;
     private final LocationClient locationClient;
+    private final AirlineClient airlineClient;
 
     @Override
-    public FlightScheduleResponse createFlightSchedule(Long airlineId, FlightScheduleRequest request) throws Exception {
-        // todo : watch for airlineId
+    public FlightScheduleResponse createFlightSchedule(Long userId, FlightScheduleRequest request) throws Exception {
+
+        AirlineResponse airlineResponse = airlineClient.getAirlineByOwner(userId);
         Flight flight = flightRepository.findById(request.getFlightId())
                 .orElseThrow(() -> new Exception("Flight not found with given id!"));
 
@@ -64,7 +68,8 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
                 flightInstanceRequest.setArrivalDateTime(
                         LocalDateTime.of(date, savedSchedule.getArrivalTime())
                 );
-                flightInstanceService.createFlightInstance(airlineId, flightInstanceRequest);
+                flightInstanceService.createFlightInstance(airlineResponse.getId(),
+                        flightInstanceRequest);
             }
         }
 
@@ -79,9 +84,10 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
     }
 
     @Override
-    public List<FlightScheduleResponse> getFlightScheduleByAirline(Long airlineId) {
-        // todo : watch airlineId
-        List<FlightSchedule> schedules = flightScheduleRepository.findByFlightAirlineId(airlineId);
+    public List<FlightScheduleResponse> getFlightScheduleByAirline(Long userId) {
+        AirlineResponse airlineResponse = airlineClient.getAirlineByOwner(userId);
+        List<FlightSchedule> schedules = flightScheduleRepository.findByFlightAirlineId(
+                airlineResponse.getId());
         return schedules.stream()
                 .map(this::convertToFlightScheduleResponse)
                 .toList();

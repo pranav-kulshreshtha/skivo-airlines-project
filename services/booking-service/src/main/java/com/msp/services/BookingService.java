@@ -9,7 +9,7 @@ public interface BookingService {
     BookingResponse createBooking(BookingRequest request, Long userId);
     BookingResponse updateBooking(Long id, BookingRequest request);
     BookingResponse getBookingById(Long id) throws Exception;
-    List<BookingResponse> getAllBookingsByAirline(Long airlineId,
+    List<BookingResponse> getAllBookingsByAirline(Long userId,
                                                   String searchQuery,
                                                   BookingStatus status,
                                                   Long flightInstanceId,

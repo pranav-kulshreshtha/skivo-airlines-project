@@ -1,10 +1,12 @@
 package com.msp.services.impl;
 
+import com.msp.client.AirlineClient;
 import com.msp.mapper.AncillaryMapper;
 import com.msp.mapper.InsuranceCoverageMapper;
 import com.msp.models.Ancillary;
 import com.msp.models.InsuranceCoverage;
 import com.msp.payloads.requests.AncillaryRequest;
+import com.msp.payloads.responses.AirlineResponse;
 import com.msp.payloads.responses.AncillaryResponse;
 import com.msp.payloads.responses.InsuranceCoverageResponse;
 import com.msp.repositories.AncillaryRepository;
@@ -20,9 +22,13 @@ public class AncillaryServiceImpl implements AncillaryService {
 
     private final AncillaryRepository ancillaryRepository;
     private final InsuranceCoverageRepository insuranceCoverageRepository;
+    private final AirlineClient airlineClient;
 
     @Override
     public AncillaryResponse createAncillary(Long userId, AncillaryRequest request) {
+
+        AirlineResponse airlineResponse = airlineClient.getAirlineByOwner(userId);
+
         Ancillary ancillary = Ancillary.builder()
                 .type(request.getType())
                 .subType(request.getSubType())
@@ -31,7 +37,7 @@ public class AncillaryServiceImpl implements AncillaryService {
                 .description(request.getDescription())
                 .metadata(request.getMetadata())
                 .displayOrder(request.getDisplayOrder())
-                .airlineId(request.getAirlineId())
+                .airlineId(airlineResponse.getOwnerId())
                 .build();
         Ancillary saved = ancillaryRepository.save(ancillary);
 
@@ -55,7 +61,10 @@ public class AncillaryServiceImpl implements AncillaryService {
 
     @Override
     public List<AncillaryResponse> getByAirlineId(Long userId) {
-        return  ancillaryRepository.findByAirlineId(userId).stream()
+
+        AirlineResponse airlineResponse = airlineClient.getAirlineByOwner(userId);
+
+        return  ancillaryRepository.findByAirlineId(airlineResponse.getId()).stream()
                 .map(anc -> {
                     //fetch insurance coverages by ancillary
                     List<InsuranceCoverage> coverages = insuranceCoverageRepository

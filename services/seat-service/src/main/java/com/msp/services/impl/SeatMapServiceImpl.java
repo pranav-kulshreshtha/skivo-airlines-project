@@ -1,9 +1,11 @@
 package com.msp.services.impl;
 
+import com.msp.client.AirlineClient;
 import com.msp.mappers.SeatMapMapper;
 import com.msp.models.CabinClass;
 import com.msp.models.SeatMap;
 import com.msp.payloads.requests.SeatMapRequest;
+import com.msp.payloads.responses.AirlineResponse;
 import com.msp.payloads.responses.SeatMapResponse;
 import com.msp.repositories.CabinClassRepository;
 import com.msp.repositories.SeatMapRepository;
@@ -19,20 +21,23 @@ public class SeatMapServiceImpl implements SeatMapService {
     private final CabinClassRepository cabinClassRepository;
     private final SeatMapRepository seatMapRepository;
     private final SeatService seatService;
+    private final AirlineClient airlineClient;
 
     @Override
-    public SeatMapResponse createSeatMap(Long airlineId, SeatMapRequest request) throws Exception {
+    public SeatMapResponse createSeatMap(Long userId, SeatMapRequest request) throws Exception {
         CabinClass cabinClass = cabinClassRepository.findById(request.getCabinClassId())
                 .orElseThrow(() -> new Exception("Cabin class with given id not found!"));
 
+        AirlineResponse airlineResponse = airlineClient.getAirlineByOwner(userId);
+
         if(seatMapRepository.existsByAirlineIdAndCabinClassIdAndName(
-                airlineId, request.getCabinClassId(), request.getName()
+                airlineResponse.getId(), request.getCabinClassId(), request.getName()
         )) {
             throw new Exception("Cabin class already exists with given name!");
         }
 
         SeatMap seatMap = SeatMapMapper.toEntity(request, cabinClass);
-        seatMap.setAirlineId(airlineId);
+        seatMap.setAirlineId(airlineResponse.getId());
         SeatMap saved = seatMapRepository.save(seatMap);
 
         // generate seats for seat map

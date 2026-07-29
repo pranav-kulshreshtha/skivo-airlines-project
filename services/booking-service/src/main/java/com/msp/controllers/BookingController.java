@@ -48,7 +48,7 @@ public class BookingController {
 
     @GetMapping("/airline")
     public ResponseEntity<List<BookingResponse>> getAllBookingsByAirline(
-            @RequestHeader("X-Airline-Id") Long airlineId,
+            @RequestHeader("X-User-Id") Long userId,
             @RequestParam(required = false) String searchQuery,
             @RequestParam(required = false) BookingStatus status,
             @RequestParam(required = false) Long flightInstanceId,
@@ -56,7 +56,7 @@ public class BookingController {
 
         return ResponseEntity.ok(
                 bookingService.getAllBookingsByAirline(
-                        airlineId,
+                        userId,
                         searchQuery,
                         status,
                         flightInstanceId,

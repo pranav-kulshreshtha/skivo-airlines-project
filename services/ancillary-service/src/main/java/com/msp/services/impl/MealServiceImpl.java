@@ -1,8 +1,10 @@
 package com.msp.services.impl;
 
+import com.msp.client.AirlineClient;
 import com.msp.mapper.MealMapper;
 import com.msp.models.Meal;
 import com.msp.payloads.requests.MealRequest;
+import com.msp.payloads.responses.AirlineResponse;
 import com.msp.payloads.responses.MealResponse;
 import com.msp.repositories.MealRepository;
 import com.msp.services.MealService;
@@ -15,10 +17,15 @@ import java.util.List;
 public class MealServiceImpl implements MealService {
 
     private final MealRepository mealRepository;
+    private final AirlineClient airlineClient;
 
     @Override
-    public MealResponse createMeal(Long airlineId, MealRequest request) throws Exception {
-        if(mealRepository.existsByCodeAndAirlineId(request.getCode(), airlineId)) {
+    public MealResponse createMeal(Long userId, MealRequest request) throws Exception {
+
+        AirlineResponse airlineResponse = airlineClient.getAirlineByOwner(userId);
+
+        if(mealRepository.existsByCodeAndAirlineId(request.getCode(),
+                airlineResponse.getId())) {
             throw new Exception("Meal code already exists!");
         }
 
@@ -33,7 +40,7 @@ public class MealServiceImpl implements MealService {
                     ? request.getRequiresAdvanceBooking() : false)
                 .advanceBookingHours(request.getAdvanceBookingHours())
                 .displayOrder(request.getDisplayOrder())
-                .airlineId(airlineId)
+                .airlineId(airlineResponse.getId())
                 .build();
 
         Meal saved = mealRepository.save(meal);
@@ -50,20 +57,24 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public List<MealResponse> getMealByAirlineId(Long airlineId) {
-        return mealRepository.findByAirlineId(airlineId)
+    public List<MealResponse> getMealByAirlineId(Long userId) {
+
+        AirlineResponse airlineResponse = airlineClient.getAirlineByOwner(userId);
+
+        return mealRepository.findByAirlineId(airlineResponse.getId())
                 .stream()
                 .map(MealMapper::toResponse)
                 .toList();
     }
 
     @Override
-    public MealResponse updateMeal(Long airlineId, Long id, MealRequest request)
+    public MealResponse updateMeal(Long userId, Long id, MealRequest request)
             throws Exception {
         Meal existing = mealRepository.findById(id)
                 .orElseThrow(() -> new Exception("Meal with given id not found!"));
+        AirlineResponse airlineResponse = airlineClient.getAirlineByOwner(userId);
         if(request.getCode()!=null && mealRepository.existsByAirlineIdAndCodeAndIdNot(
-                airlineId,
+                airlineResponse.getId(),
                 request.getCode(),
                 existing.getId()
         )) {

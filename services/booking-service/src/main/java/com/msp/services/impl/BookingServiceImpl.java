@@ -1,5 +1,6 @@
 package com.msp.services.impl;
 
+import com.msp.client.AirlineClient;
 import com.msp.client.AncillaryClient;
 import com.msp.client.FlightClient;
 import com.msp.client.SeatClient;
@@ -32,6 +33,7 @@ public class BookingServiceImpl implements BookingService {
     private final FlightClient flightClient;
     private final SeatClient seatClient;
     private final AncillaryClient ancillaryClient;
+    private final AirlineClient airlineClient;
     private final FareIntegrationService fareIntegrationService;
 
     @Override
@@ -109,16 +111,21 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingResponse> getAllBookingsByAirline(
-            Long airlineId,
+            Long userId,
             String searchQuery,
             BookingStatus status,
             Long flightInstanceId,
             String sortDirection) {
+
         Sort.Direction direction = "asc".equalsIgnoreCase(sortDirection) ?
                 Sort.Direction.ASC : Sort.Direction.DESC;
+
         Sort sort = Sort.by(direction,"bookingDate");
+
+        AirlineResponse airlineResponse = airlineClient.getAirlineByOwner(userId);
+
         List<Booking> bookings = bookingRepository.findByAirlineWithFilter(
-                airlineId,
+                airlineResponse.getId(),
                 searchQuery,
                 status,
                 flightInstanceId,
