@@ -8,8 +8,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PaymentLinkResponse {
-
+    private Long id;
     private String payment_link_url;
     private String payment_link_id;
 }

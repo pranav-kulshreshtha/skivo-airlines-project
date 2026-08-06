@@ -5,6 +5,8 @@ import com.msp.models.Seat;
 import com.msp.models.SeatMap;
 import com.msp.payloads.requests.SeatMapRequest;
 import com.msp.payloads.responses.SeatMapResponse;
+import com.msp.payloads.responses.SeatResponse;
+
 import java.util.List;
 
 public class SeatMapMapper {
@@ -25,6 +27,10 @@ public class SeatMapMapper {
         if(seatMap == null) return null;
 
         List<Seat> seats = seatMap.getSeats();
+        List<SeatResponse> seatResponse = seats
+                .stream()
+                .map(SeatMapper::toResponse)
+                .toList();
         int totalSeats = seats != null ? seats.size() : 0;
         int availableSeats = seats != null ? (int) seats.stream().filter(seat ->
                                                                          Boolean.TRUE.equals(seat.getIsAvailable()) &&
@@ -58,6 +64,7 @@ public class SeatMapMapper {
                 .windowSeats(windowSeats)
                 .aisleSeats(aisleSeats)
                 .middleSeats(middleSeats)
+                .seats(seatResponse)
                 .build();
     }
 

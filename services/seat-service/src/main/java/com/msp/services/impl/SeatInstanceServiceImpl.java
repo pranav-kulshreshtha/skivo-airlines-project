@@ -1,6 +1,9 @@
 package com.msp.services.impl;
 
+import com.msp.enums.SeatAvailabilityStatus;
+import com.msp.mappers.SeatInstanceMapper;
 import com.msp.models.SeatInstance;
+import com.msp.payloads.responses.SeatInstanceResponse;
 import com.msp.repositories.SeatInstanceRepository;
 import com.msp.services.SeatInstanceService;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +29,25 @@ public class SeatInstanceServiceImpl implements SeatInstanceService {
         }
 
         return price;
+    }
+
+    @Override
+    public SeatInstanceResponse updateSeatInstanceStatus(Long seatInstanceId, SeatAvailabilityStatus status) {
+        SeatInstance seatInstance = seatInstanceRepository.findById(seatInstanceId)
+                .orElse(null);
+        if(seatInstance == null)return null;
+
+        seatInstance.setSeatAvailabilityStatus(status);
+        seatInstanceRepository.save(seatInstance);
+
+        return SeatInstanceMapper.toResponse(seatInstance);
+    }
+
+    @Override
+    public List<SeatInstanceResponse> getAllByIds(List<Long> ids) {
+        return seatInstanceRepository.findAllById(ids)
+                .stream()
+                .map(SeatInstanceMapper::toResponse)
+                .toList();
     }
 }

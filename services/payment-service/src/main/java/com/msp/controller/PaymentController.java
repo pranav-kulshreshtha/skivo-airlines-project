@@ -45,7 +45,7 @@ public class PaymentController {
             @Valid @RequestBody PaymentVerifyRequest request)
             throws PaymentException {
 
-            log.info("Received payment verification request");
+            System.out.println("Received payment verification request");
             PaymentDTO payment = paymentService.verifyPayment(request);
             return ResponseEntity.ok(payment);
 
@@ -71,9 +71,13 @@ public class PaymentController {
         return ResponseEntity.ok(payments);
     }
 
+    @GetMapping("/booking/{bookingId}")
+    public ResponseEntity<PaymentDTO> getPaymentByBookingId(
+            @PathVariable Long bookingId) throws Exception {
 
-
-
+        return ResponseEntity.ok(
+                paymentService.getPaymentByBookingId(bookingId));
+    }
 
     private record ErrorResponse(String message) {}
 }

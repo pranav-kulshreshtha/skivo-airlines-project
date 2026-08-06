@@ -1,90 +1,103 @@
 package com.msp.controllers;
 
 import com.msp.enums.BookingStatus;
+import com.msp.exceptions.PaymentException;
 import com.msp.payloads.requests.BookingRequest;
 import com.msp.payloads.responses.ApiResponse;
 import com.msp.payloads.responses.BookingResponse;
+import com.msp.payloads.responses.PaymentInitiateResponse;
 import com.msp.services.BookingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/bookings")
+@RequiredArgsConstructor
 public class BookingController {
 
     private final BookingService bookingService;
 
     @PostMapping
-    public ResponseEntity<BookingResponse> createBooking(
-            @RequestHeader("X-User-Id") Long userId,
-            @Valid @RequestBody BookingRequest request) {
-
-        return new ResponseEntity<>(
-                bookingService.createBooking(request, userId),
-                HttpStatus.CREATED);
+    public ResponseEntity<PaymentInitiateResponse> createBooking(
+            @Valid @RequestBody BookingRequest request,
+            @RequestHeader("X-User-Id") Long userId)
+            throws ResourceNotFoundException, PaymentException {
+        PaymentInitiateResponse response = bookingService.createBooking(request, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id:\\d+}")
     public ResponseEntity<BookingResponse> updateBooking(
             @PathVariable Long id,
-            @Valid @RequestBody BookingRequest request) {
-
-        return ResponseEntity.ok(
-                bookingService.updateBooking(id, request));
+            @Valid @RequestBody BookingRequest request,
+            @RequestHeader("X-User-Id") Long userId) throws ResourceNotFoundException {
+        BookingResponse response = bookingService.updateBooking(id, request);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<BookingResponse> getBookingById(
             @PathVariable Long id) throws Exception {
-
-        return ResponseEntity.ok(
-                bookingService.getBookingById(id));
+        BookingResponse response = bookingService.getBookingById(id);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/airline")
-    public ResponseEntity<List<BookingResponse>> getAllBookingsByAirline(
-            @RequestHeader("X-User-Id") Long userId,
-            @RequestParam(required = false) String searchQuery,
+    public ResponseEntity<List<BookingResponse>> getBookingsByAirline(
+            @RequestParam(required = false) String search,
             @RequestParam(required = false) BookingStatus status,
             @RequestParam(required = false) Long flightInstanceId,
-            @RequestParam(defaultValue = "desc") String sortDirection) {
-
-        return ResponseEntity.ok(
-                bookingService.getAllBookingsByAirline(
-                        userId,
-                        searchQuery,
-                        status,
-                        flightInstanceId,
-                        sortDirection));
+            @RequestParam(defaultValue = "DESC") String sortDirection,
+            @RequestHeader("X-User-Id") Long userId
+    ) {
+        List<BookingResponse> responses = bookingService.getBookingsByAirline(
+                userId,
+                search,
+                status,
+                flightInstanceId,
+                sortDirection
+        );
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/user/history")
     public ResponseEntity<List<BookingResponse>> getBookingsByUser(
             @RequestHeader("X-User-Id") Long userId) {
-
-        return ResponseEntity.ok(
-                bookingService.getBookingsByUser(userId));
+        List<BookingResponse> responses = bookingService.getBookingsByUser(userId);
+        return ResponseEntity.ok(responses);
     }
 
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<BookingResponse> cancelBooking(
-            @PathVariable Long id) throws Exception {
-
-        return ResponseEntity.ok(
-                bookingService.cancelBooking(id));
+            @PathVariable Long id,
+            @RequestHeader("X-User-Id") Long userId) throws ResourceNotFoundException {
+        BookingResponse response = bookingService.cancelBooking(id);
+        return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse> deleteBooking(
-            @PathVariable Long id) throws Exception {
-
+    @DeleteMapping("/{id:\\d+}")
+    public ResponseEntity<Void> deleteBooking(
+            @PathVariable Long id,
+            @RequestHeader("X-User-Id") Long userId) throws ResourceNotFoundException {
         bookingService.deleteBooking(id);
-        ApiResponse apiResponse = new ApiResponse("Booking deleted successfully");
-        return ResponseEntity.ok(apiResponse);
+        return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/count/flight/{flightId}")
+    public ResponseEntity<Long> getBookingCountByFlight(@PathVariable Long flightId) {
+        long count = bookingService.countByFlightId(flightId);
+        return ResponseEntity.ok(count);
+    }
+
+//    @GetMapping("/statistics/airline")
+//    public ResponseEntity<BookingStatisticsResponse> getBookingStatisticsForAirline(
+//            @RequestParam Long airlineId) {
+//        BookingStatisticsResponse statistics = bookingService.getBookingStatisticsForAirline(airlineId);
+//        return ResponseEntity.ok(statistics);
+//    }
 }

@@ -26,7 +26,7 @@ public class PassengerRequest {
     private String email;
 
     @NotBlank(message = "Phone number is required!")
-    @Pattern(regexp = "^\\+[0-9]{1-3}[0-9]{4,14}$",
+    @Pattern(regexp = "^\\+[0-9]{1,3}[0-9]{4,14}$",
             message = "Phone number must be in a valid format!")
     private String phone;
 
@@ -41,4 +41,11 @@ public class PassengerRequest {
     private Long seatInstanceId;
 
     private String nationality;
+
+    private String passportNumber;
+    private String frequentFlyerNumber;
+
+    private Boolean requiresWheelchairAssistance;
+    private String dietaryPreferences;
+    private String medicalConditions;
 }

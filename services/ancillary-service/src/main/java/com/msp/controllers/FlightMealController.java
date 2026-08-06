@@ -42,7 +42,7 @@ public class FlightMealController {
 
     @PostMapping("/all")
     public ResponseEntity<List<FlightMealResponse>> getMealsByIds(
-            @RequestParam List<Long> ids
+            @RequestBody List<Long> ids
     ) {
         return ResponseEntity.ok(flightMealService.getAllByIds(ids));
     }

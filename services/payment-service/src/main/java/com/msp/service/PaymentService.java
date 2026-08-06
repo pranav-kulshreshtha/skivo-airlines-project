@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface PaymentService {
 
@@ -20,7 +21,7 @@ public interface PaymentService {
 
     Page<PaymentDTO> getAllPayments(Pageable pageable);
 
-
+    PaymentDTO getPaymentByBookingId(Long bookingId) throws Exception;
 
     Map<Long, PaymentDTO> getPaymentsByBookingIds(List<Long> bookingIds);
 }

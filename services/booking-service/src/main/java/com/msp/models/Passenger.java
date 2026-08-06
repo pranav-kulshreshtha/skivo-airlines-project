@@ -47,6 +47,16 @@ public class Passenger {
 
     private Boolean isActive = true;
 
+    private String passportNumber;
+
+    private String frequentFlyerNumber;
+
+    private Boolean requiresWheelchairAssistance = false;
+
+    private String dietaryPreferences;
+
+    private String medicalConditions;
+
     @Version
     private Long version;
 

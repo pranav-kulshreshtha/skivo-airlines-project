@@ -26,6 +26,13 @@ public class FlightCabinAncillaryController {
                 HttpStatus.CREATED);
     }
 
+    @PostMapping("/ids")
+    public ResponseEntity<List<FlightCabinAncillaryResponse>> getAllByIds(
+            @RequestBody List<Long> ids) {
+        return ResponseEntity.ok(
+                flightCabinAncillaryService.getAllByIds(ids));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<FlightCabinAncillaryResponse> getById(
             @PathVariable Long id) throws Exception {
@@ -40,13 +47,6 @@ public class FlightCabinAncillaryController {
         return ResponseEntity.ok(
                 flightCabinAncillaryService.getByFlightAndCabinClass(
                         flightId, cabinClassId));
-    }
-
-    @PostMapping("/ids")
-    public ResponseEntity<List<FlightCabinAncillaryResponse>> getAllByIds(
-            @RequestBody List<Long> ids) {
-        return ResponseEntity.ok(
-                flightCabinAncillaryService.getAllByIds(ids));
     }
 
     @GetMapping("/flight/{flightId}/cabin/{cabinClassId}/type/{type}")

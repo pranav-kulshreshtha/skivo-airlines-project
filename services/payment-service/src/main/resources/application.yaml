@@ -1,3 +1,6 @@
+server:
+  port: 5010
+
 spring:
   application:
     name: payment-service
@@ -6,12 +9,15 @@ spring:
     url: jdbc:mysql://localhost:3306/msp_airline_pricing_db
     username: root
     password: Pkul@4567
+  jpa:
+    hibernate:
+      ddl-auto: update
 
   config:
     import: optional:configserver:http://localhost:8888
 
-#  kafka:
-#    bootstrap-servers: localhost:9092
+  kafka:
+    bootstrap-servers: localhost:9092
 
 #  cloud:
 #    openfeign:
@@ -22,8 +28,8 @@ spring:
 
 razorpay:
   api:
-    key: your razorpay key
-    secret: your razorpay secret
+    key: rzp_test_TM3zfbvIlBJ7II
+    secret: FSv6ZhYN8In9p6gF9MzTRCwH
   callback:
     base-url: http://localhost:5173
 

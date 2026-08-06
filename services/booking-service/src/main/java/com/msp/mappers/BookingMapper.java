@@ -7,6 +7,7 @@ import com.msp.payloads.DTO.PaymentDTO;
 import com.msp.payloads.requests.BookingRequest;
 import com.msp.payloads.responses.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -104,7 +105,7 @@ public class BookingMapper {
                 .paymentStatus(paymentDTO != null ? paymentDTO.getStatus() : null)
                 .payment(paymentDTO == null ? null :
                         PaymentLinkResponse.builder()
-                                .id(paymentDTO.getId())
+                                 .id(paymentDTO.getId())
                                 .build())
 
                 //fare details
@@ -112,6 +113,16 @@ public class BookingMapper {
                 .totalAmount(fareResponse!=null ? fareResponse.getTotalPrice() : null)
                 .contactInfo(booking.getContactInfo())
                 .build();
+    }
+
+    public static void updateEntityFromRequest(
+            BookingRequest request, Booking booking,
+            Set<Passenger> passengers) {
+        booking.setFlightInstanceId(request.getFlightInstanceId());
+        booking.setFlightId(request.getFlightId());
+        booking.setFareId(request.getFareId());
+        booking.setPassengers(passengers);
+        booking.setLastModified(Instant.from(LocalDateTime.now()));
     }
 
 }

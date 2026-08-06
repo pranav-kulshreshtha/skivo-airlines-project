@@ -54,4 +54,19 @@ public class PassengerMapper {
         if(request.getNationality() != null) passenger.setNationality(request.getNationality());
     }
 
+    public static void updateEntityFromRequest(PassengerRequest request, Passenger passenger) {
+        passenger.setFirstName(request.getFirstName());
+        passenger.setLastName(request.getLastName());
+        passenger.setEmail(request.getEmail());
+        passenger.setPhone(request.getPhone());
+        passenger.setDateOfBirth(request.getDateOfBirth());
+        passenger.setGender(request.getGender());
+        passenger.setPassportNumber(request.getPassportNumber());
+        passenger.setNationality(request.getNationality());
+        passenger.setFrequentFlyerNumber(request.getFrequentFlyerNumber());
+        passenger.setRequiresWheelchairAssistance(request.getRequiresWheelchairAssistance());
+        passenger.setDietaryPreferences(request.getDietaryPreferences());
+        passenger.setMedicalConditions(request.getMedicalConditions());
+    }
+
 }

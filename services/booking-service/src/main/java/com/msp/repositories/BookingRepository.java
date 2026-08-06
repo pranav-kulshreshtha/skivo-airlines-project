@@ -7,10 +7,21 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
+import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
+
     List<Booking> findByUserId(Long userId);
+
+    Optional<Booking> findByBookingReference(String bookingReference);
+
     long countByFlightInstanceId(Long flightInstanceId);
+
+    @Query("SELECT b FROM Booking b " +
+            "LEFT JOIN FETCH b.passengers " +
+            "LEFT JOIN FETCH b.tickets " +
+            "WHERE b.id = :id")
+    Optional<Booking> findByIdWithDetails(@Param("id") Long id);
 
     @Query("""
             select distinct b from Booking b

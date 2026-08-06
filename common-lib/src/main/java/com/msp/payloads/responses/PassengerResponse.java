@@ -30,6 +30,7 @@ public class PassengerResponse {
     private Integer age;
     private Boolean isAdult;
     private String fullName;
+    private String passportNumber;
 
     private Instant createdAt;
     private Instant updatedAt;

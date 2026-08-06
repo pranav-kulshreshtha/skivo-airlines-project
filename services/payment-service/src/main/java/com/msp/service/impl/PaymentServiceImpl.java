@@ -3,6 +3,7 @@ package com.msp.service.impl;
 import com.msp.dto.UserDTO;
 import com.msp.enums.PaymentGateway;
 import com.msp.enums.PaymentStatus;
+import com.msp.events.PaymentEventProducer;
 import com.msp.exceptions.PaymentException;
 import com.msp.payloads.requests.PaymentInitiateRequest;
 import com.msp.payloads.requests.PaymentVerifyRequest;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final RazorpayService razorpayService;
     private final UserClient userClient;
+    private final PaymentEventProducer paymentEventProducer;
 
     @Override
     @Transactional
@@ -138,6 +141,7 @@ public class PaymentServiceImpl implements PaymentService {
                 payment.setProviderPaymentId(request.getRazorpayPaymentId());
 
             }
+
         } else if (payment.getProvider() == PaymentGateway.STRIPE) {
 //            isValid = stripeService.verifyPayment(request.getStripePaymentIntentId());
 //
@@ -152,13 +156,15 @@ public class PaymentServiceImpl implements PaymentService {
 
             // Save payment first
             payment = paymentRepository.save(payment);
-            System.out.println("send payment event and payment status is : "+status);
+
+            paymentEventProducer.sendPaymentCompleted(payment);
         } else {
             payment.setStatus(PaymentStatus.FAILED);
             payment.setFailureReason("Payment verification failed");
             log.error("Payment verification failed: {}", payment.getId());
             payment = paymentRepository.save(payment);
 
+            paymentEventProducer.sendPaymentFailed(payment);
         }
 
         return PaymentMapper.toDTO(payment);
@@ -184,5 +190,14 @@ public class PaymentServiceImpl implements PaymentService {
     private String generateTransactionId() {
         return "TXN_" + System.currentTimeMillis() + "_" +
                 UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    }
+
+    public PaymentDTO getPaymentByBookingId(Long bookingId) throws Exception {
+        Optional<Payment> paymentDTO = paymentRepository.findByBookingId(bookingId);
+        if(paymentDTO.isEmpty()){
+            throw new Exception("Payment not found with given booking ID!");
+        }
+
+        return PaymentMapper.toDTO(paymentDTO.get());
     }
 }
