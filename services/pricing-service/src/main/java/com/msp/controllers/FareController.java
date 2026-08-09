@@ -45,6 +45,15 @@ public class FareController {
         return ResponseEntity.ok(fareService.getFaresByIds(ids));
     }
 
+    @GetMapping("/lowest/flight/{flightId}/cabin-class/{cabinClassId}")
+    ResponseEntity<FareResponse> getLowestFareForFlightAndCabinClass(
+            @PathVariable Long flightId,
+            @PathVariable Long cabinClassId
+    ) {
+        return ResponseEntity.ok(fareService.getLowestFareForFlightAndCabin(
+                flightId, cabinClassId));
+    }
+
     @GetMapping("/flight/{flightId}/cabin-class/{cabinClassId}")
     public ResponseEntity<List<FareResponse>> getFaresByFlightAndCabinClass(
             @PathVariable Long flightId,
