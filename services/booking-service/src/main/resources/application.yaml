@@ -1,27 +1,6 @@
-server:
-  port: 5009
-
 spring:
   application:
     name: booking-service
 
-  datasource:
-    url: jdbc:mysql://localhost:3306/msp_airlines_booking_db
-    username: root
-    password: Pkul@4567
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-
-  kafka:
-    bootstrap-servers: localhost:9092
-    consumer:
-      group-id: booking-service-group
-
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-  instance:
-    prefer-ip-address: true
+  config:
+    import: optional:configserver:http://localhost:8888

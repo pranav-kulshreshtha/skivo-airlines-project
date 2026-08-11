@@ -1,29 +1,6 @@
-server:
-  port: 5006
-
 spring:
   application:
     name: seat-service
 
-  datasource:
-    url: jdbc:mysql://localhost:3306/msp_airlines_seat_db
-    username: root
-    password: Pkul@4567
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-
-  kafka:
-    bootstrap-servers: localhost:9092
-    consumer:
-      group-id: seat-service-group
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
-
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-  instance:
-    prefer-ip-address: true
+  config:
+    import: optional:configserver:http://localhost:8888
