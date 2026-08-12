@@ -127,7 +127,7 @@
 				<version>3.5.1</version>
 				<configuration>
 					<to>
-						<image>zoshilo/gds-payment:1.0.0</image>
+						<image>pranavkul4/msp-gds-payment:1.0.0</image>
 					</to>
 				</configuration>
 			</plugin>
