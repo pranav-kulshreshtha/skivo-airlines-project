@@ -1,6 +1,7 @@
 package com.msp.config;
 
 import org.springframework.cache.annotation.CachingConfigurer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -19,6 +20,7 @@ import java.util.Map;
 @Configuration
 public class RedisConfig implements CachingConfigurer {
 
+    @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
         PolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
                 .allowIfSubType(Object.class)
