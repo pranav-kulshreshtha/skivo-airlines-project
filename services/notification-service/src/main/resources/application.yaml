@@ -1,0 +1,42 @@
+server:
+  port: 5012
+
+spring:
+  application:
+    name: notification-service
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:pranavkul4444@gmail.com}
+    password: ${MAIL_APP_PASSWORD:zxot dlnj woqk ssbq}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+        debug: false
+
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+notification:
+  from-email: ${MAIL_FROM:pranavkul4444@gmail.com}
+  from-name: "MSP Air Notification"
+  checkin-url: "your frontend url"
