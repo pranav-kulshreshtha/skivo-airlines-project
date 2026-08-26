@@ -162,18 +162,3 @@ The project was built to explore practical backend engineering concerns beyond b
 ## Project Status
 
 This project is a continuously evolving learning and engineering project focused on applying production-oriented backend architecture and performance practices with the Spring ecosystem.
-
-```
-
-A couple of deliberate choices here:
-
-**I did not put your latency numbers into the README.** Those numbers are much more powerful in your resume because there they tell a specific ownership story. In the README, the architectural decisions should be the star.
-
-I also wouldn't claim things like "highly scalable", "enterprise-grade", "fault tolerant architecture" or "handles millions of users". Those are easy claims to make and difficult to substantiate. Your actual repository already has enough substance without them.
-
-The architecture itself is visible in the repository structure: the `cloud` module contains the gateway, config server and service registry, while `services` contains the ten domain services.
-
-One thing I **would** add after this is a simple architecture diagram near the top of the README. That's the single biggest remaining upgrade for this repository. A recruiter should be able to open the page and understand the system in about 15 seconds.
-
-And because your project has this many moving parts, the diagram could actually make the repo look **substantially more impressive without changing a single line of code**.
-```
