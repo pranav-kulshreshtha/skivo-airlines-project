@@ -86,13 +86,6 @@
                                     <p style="margin:0 0 6px;font-size:12px;color:#64748b;" th:text="${depDate}">22 Feb 2026</p>
                                     <p style="margin:0 0 2px;font-size:11px;color:#94a3b8;"
                                        th:text="${booking.departureAirportName}">Indira Gandhi International Airport</p>
-                                    <div th:if="${booking.departureTerminal != null}"
-                                         style="margin-top:8px;display:inline-block;background:#f1f5f9;border-radius:6px;
-                              padding:4px 10px;font-size:11px;font-weight:600;color:#475569;">
-                                        Terminal <span th:text="${booking.departureTerminal}">2</span>
-                                        <span th:if="${booking.departureGate != null}"
-                                              th:text="' · Gate ' + ${booking.departureGate}"> · Gate A6</span>
-                                    </div>
                                 </td>
 
                                 <!-- Middle: flight number + duration -->
@@ -185,26 +178,8 @@
                              border-bottom:1px solid #f1f5f9;"
                                     th:text="${pax.passportNumber != null ? pax.passportNumber : '—'}">AB1234567</td>
                             </tr>
-                            <!-- Frequent Flyer row if present -->
-                            <tr th:if="${pax.frequentFlyerNumber != null}"
-                                th:each="pax : ${booking.passengers}"
-                                style="display:none;"><!-- handled inline below --></tr>
                             </tbody>
                         </table>
-
-                        <!-- Special requirements notice -->
-                        <div th:each="pax : ${booking.passengers}"
-                             th:if="${pax.requiresWheelchair or (pax.dietaryPreferences != null and !pax.dietaryPreferences.isEmpty())}">
-                            <p style="margin:10px 0 4px;font-size:12px;font-weight:600;color:#f59e0b;">
-                                &#9888; Special Requirements for <span th:text="${pax.getFullName()}">John Smith</span>:
-                            </p>
-                            <p th:if="${pax.requiresWheelchair}"
-                               style="margin:2px 0;font-size:12px;color:#475569;">&#9903; Wheelchair assistance requested</p>
-                            <p th:if="${pax.dietaryPreferences != null and !pax.dietaryPreferences.isEmpty()}"
-                               style="margin:2px 0;font-size:12px;color:#475569;">
-                                &#127857; Dietary: <span th:text="${pax.dietaryPreferences}">Vegetarian</span>
-                            </p>
-                        </div>
                     </td>
                 </tr>
 

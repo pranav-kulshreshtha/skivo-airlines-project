@@ -46,6 +46,8 @@ public class EmailService {
         mimeMessageHelper.setTo(booking.getContactEmail());
         mimeMessageHelper.setSubject(buildSubject(booking));
         mimeMessageHelper.setText(buildHtmlBody(booking));
+
+        mailSender.send(mimeMessage);
     }
 
     private String buildHtmlBody(BookingConfirmedEvent booking) {

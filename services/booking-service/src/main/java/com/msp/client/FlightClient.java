@@ -3,7 +3,6 @@ package com.msp.client;
 import com.msp.payloads.responses.FlightInstanceResponse;
 import com.msp.payloads.responses.FlightResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +25,9 @@ public interface FlightClient {
 
     @PostMapping("/api/flight-instances/batch")
     Map<Long, FlightInstanceResponse> getFlightInstancesByIds(@RequestBody List<Long> ids);
+
+    @GetMapping("/api/flight-instances/{id}")
+    FlightInstanceResponse getFlightInstanceById(@PathVariable Long id);
 
 }
 
